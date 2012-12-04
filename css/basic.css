@@ -1,0 +1,37 @@
+a:hover{font-weight:bold; text-decoration:underline; }
+body{ font-family:arial, helvetica}
+
+.left-menu-link
+{
+	font-family: "Lucida Grande", Verdana, Arial;
+	font-size: smaller;
+}
+
+.left-menu-title
+{
+	color: white;
+	font-weight: bold;
+	font-family: "Lucida Grande", Verdana, Arial;
+	font-size: smaller;
+	
+}
+
+.left-menu-link-td
+{
+	text-align: center;
+	background-color: #cccccc;	
+}
+
+.left-menu-title-td
+{
+	text-align: center;
+	background-color: #999999;
+}
+
+
+.testclass
+{
+	
+	font-style: italic;
+	
+}
