@@ -65,7 +65,6 @@ if(!isset($_POST['go']))
 				}
 				else
 				{
-					alert("All's well in La-La-Land...");
 					return true;
 				}
 			}

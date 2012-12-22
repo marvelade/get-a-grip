@@ -15,19 +15,20 @@
 		const CURRENCY_USD = 1;
 		
 		static $currencies = Array('&euro;', '$');
-	
+		static $legal_write_modes = Array(self::WRITE_MODE_INSERT, self::WRITE_MODE_UPDATE);
+		
 		public function __construct()
 		{
 			$this -> notifications = Array();
-			$this -> legal_write_modes = Array(self::WRITE_MODE_INSERT, self::WRITE_MODE_UPDATE);
+			
 			return true;
 		}
 		
 		public function display_input_form($write_mode)	
 		{
-			if(!$this -> write_mode_is_legal($write_mode))
+			if(!self :: write_mode_is_legal($write_mode))
 			{
-				throw new Exception(__METHOD__ . ': false write mode argument supplied:"' . $write_mode . '"');
+				throw new PaymentException(__METHOD__ . ': false write mode argument supplied:"' . $write_mode . '"');
 				return false;
 			}
 			else
@@ -146,9 +147,9 @@
 			$this -> notifications[] = $d;
 		}
 		
-		private function write_mode_is_legal($write_mode)
+		private static function write_mode_is_legal($write_mode)
 		{
-			return (in_array($write_mode, $this -> legal_write_modes));
+			return (in_array($write_mode, self :: $legal_write_modes));
 		}
 		
 		private function all_properties_set_for_db_write($write_mode)
@@ -156,9 +157,9 @@
 		
 									
 								
-			if(!$this -> write_mode_is_legal($write_mode))
+			if(!self :: write_mode_is_legal($write_mode))
 			{
-				throw new Exception('"' . $write_mode . '" is an Illegal database write mode');
+				throw new PaymentException('"' . $write_mode . '" is an Illegal database write mode');
 			}
 			else
 			{
@@ -222,13 +223,13 @@
 			require("inc.dbconnect.php");
 			
 			
-			if(!$this -> write_mode_is_legal($write_mode))
+			if(!self :: write_mode_is_legal($write_mode))
 			{
-				throw new Exception('"' . $write_mode . '" is an Illegal database write mode');
+				throw new PaymentException('"' . $write_mode . '" is an Illegal database write mode');
 			}
 			if(!$this -> all_properties_set_for_db_write($write_mode) )
 			{
-				throw new Exception('This object is not ready for writing to the database:' . $this -> get_lacking_properties($write_mode));
+				throw new PaymentException('This object is not ready for writing to the database:' . $this -> get_lacking_properties($write_mode));
 			}
 			else
 			{
@@ -429,7 +430,7 @@
 			}
 			else
 			{
-				throw new Exception('"' . $type . '" is an Illegal type for this constructor');
+				throw new PaymentException('"' . $type . '" is an Illegal type for this constructor');
 			}
 		}
 		
