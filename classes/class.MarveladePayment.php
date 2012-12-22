@@ -1,5 +1,5 @@
 <?php
-	
+	require("inc.dbconnect.php");
 	require_once("config.php");
 
 	class MarveladePayment
@@ -16,6 +16,7 @@
 		
 		static $currencies = Array('&euro;', '$');
 		static $legal_write_modes = Array(self::WRITE_MODE_INSERT, self::WRITE_MODE_UPDATE);
+	  
 		
 		public function __construct()
 		{
@@ -220,7 +221,7 @@
 		public function write_to_db($write_mode = self::WRITE_MODE_INSERT)
 		{
 			
-			require("inc.dbconnect.php");
+			
 			
 			
 			if(!self :: write_mode_is_legal($write_mode))
@@ -278,6 +279,8 @@
 				
 				}
 				
+				
+				$dbh = Settings :: get('dbh');
 				$stmt = $dbh -> prepare($sql);
 				
 				$real_sql = $sql;
@@ -310,14 +313,17 @@
 		
 		public function read_from_db($p_id)
 		{
-			require("inc.dbconnect.php");
+			
 			
 			$sql = "SELECT * 
 					FROM " . TBL_PREFIX . "tbl_payments
 					WHERE payment_id=:pid LIMIT 1";
+					
+			$dbh = Settings :: get('dbh');
 			$stmt = $dbh -> prepare($sql);
 			$stmt -> bindValue(":pid", intval($p_id), PDO::PARAM_INT);
 			$stmt -> execute();
+			
 			
 			$row = $stmt -> fetch(PDO::FETCH_ASSOC);
 			
@@ -349,9 +355,11 @@
 		
 		public function delete_from_db($p_id)
 		{
-			require("inc.dbconnect.php");
+			
 			
 			$sql = "DELETE FROM " . TBL_PREFIX . "tbl_payments WHERE payment_id=:pid LIMIT 1";
+			
+			$dbh = Settings :: get('dbh');
 			$stmt = $dbh -> prepare($sql);
 			$stmt -> bindValue(":pid", intval($p_id), PDO::PARAM_INT);
 			
@@ -360,7 +368,7 @@
 		
 		public function make_invisible($p_id)
 		{
-			require("inc.dbconnect.php");
+
 			
 			$sql = "UPDATE 
 						" . TBL_PREFIX . "tbl_payments
@@ -369,6 +377,8 @@
 					WHERE
 						payment_id=:pid
 					LIMIT 1";
+					
+			$dbh = Settings :: get('dbh');
 			$stmt = $dbh -> prepare($sql);
 			$stmt -> bindValue(":pid", intval($p_id), PDO::PARAM_INT);
 			
