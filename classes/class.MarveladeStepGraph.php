@@ -1,7 +1,5 @@
 <?php
 
-
-require("class.MarveladeStepGraphPoint.php");
 class MarveladeStepGraph
 {
 	
@@ -33,7 +31,7 @@ class MarveladeStepGraph
 		
 		
 		
-		$sql_mon_min = "SELECT SUM(payment_amount) AS mon_min FROM " . TBL_PREFIX . "tbl_payments WHERE payment_io_type='-1'";
+		$sql_mon_min = "SELECT SUM(payment_amount) AS mon_min FROM " . Settings::get('TBL_PREFIX') . "tbl_payments WHERE payment_io_type='-1'";
 		$stmt = $dbh -> prepare($sql_mon_min);
 		$stmt -> execute();
 		$row = $stmt -> fetch(PDO::FETCH_ASSOC);
@@ -45,13 +43,13 @@ class MarveladeStepGraph
 		
 		
 		
-		$sql_mon_max = "SELECT SUM(payment_amount) AS mon_max FROM " . TBL_PREFIX . "tbl_payments WHERE payment_io_type='1'";
+		$sql_mon_max = "SELECT SUM(payment_amount) AS mon_max FROM " . Settings::get('TBL_PREFIX') . "tbl_payments WHERE payment_io_type='1'";
 		$stmt = $dbh -> prepare($sql_mon_max);
 		$stmt -> execute();
 		$row = $stmt -> fetch(PDO::FETCH_ASSOC);
 		$mon_max = floatval($row['mon_max']);
 				
-		$sql_t_max = "SELECT MAX(payment_due_date) AS t_max FROM " . TBL_PREFIX . "tbl_payments WHERE 1";
+		$sql_t_max = "SELECT MAX(payment_due_date) AS t_max FROM " . Settings::get('TBL_PREFIX') . "tbl_payments WHERE 1";
 		$stmt = $dbh -> prepare($sql_t_max);
 		$stmt -> execute();
 		$row = $stmt -> fetch(PDO::FETCH_ASSOC);
@@ -63,7 +61,7 @@ class MarveladeStepGraph
 		
 		
 		
-		$sql = "SELECT payment_amount, payment_due_date, payment_io_type FROM " . TBL_PREFIX . "tbl_payments ORDER BY payment_due_date ASC";
+		$sql = "SELECT payment_amount, payment_due_date, payment_io_type FROM " . Settings::get('TBL_PREFIX') . "tbl_payments ORDER BY payment_due_date ASC";
 		$stmt = $dbh -> prepare($sql);
 		$stmt -> execute();
 	

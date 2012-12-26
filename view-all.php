@@ -19,10 +19,10 @@ require("config.php");
 	?>
 	
 		<center>
-		<table <?= MAIN_TABLE_ATTRIBUTES; ?>>
+		<table <?= Settings::get('MAIN_TABLE_ATTRIBUTES'); ?>>
 			<tr>
 				<td>
-					<table <?= SUB_TABLE_ATTRIBUTES; ?>>
+					<table <?= Settings::get('SUB_TABLE_ATTRIBUTES'); ?>>
 						<tr>
 							
 							<?php			

@@ -69,9 +69,9 @@
 						c.contact_name,
 						c.contact_color
 					FROM 
-						" . TBL_PREFIX . "tbl_payments AS p 
+						" . Settings::get('TBL_PREFIX') . "tbl_payments AS p 
 					JOIN 
-						" . TBL_PREFIX . "tbl_contacts AS c 
+						" . Settings::get('TBL_PREFIX') . "tbl_contacts AS c 
 					ON 
 						p.payment_contact_id = c.contact_id
 					WHERE  p.payment_visible='1'";

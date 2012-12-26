@@ -56,7 +56,7 @@
 		private function set_parent_payment_id($ppid)
 		{
 			require("inc.dbconnect.php");
-			$sql = "SELECT payment_id FROM `" . TBL_PREFIX . "tbl_payments` WHERE payment_id=:p_id";
+			$sql = "SELECT payment_id FROM `" . Settings::get('TBL_PREFIX') . "tbl_payments` WHERE payment_id=:p_id";
 			$stmt = $dbh -> prepare($sql);
 			$stmt -> bindParam(":p_id", $ppid, PDO::PARAM_INT);
 			
@@ -106,7 +106,7 @@
 			}
 			elseif($writemode == self::WRITE_MODE_INSERT)
 			{
-				$sql = "INSERT INTO `" . TBL_PREFIX . "tbl_payments` 
+				$sql = "INSERT INTO `" . Settings::get('TBL_PREFIX') . "tbl_payments` 
 						(
 							`payment_id`,
 							`payment_amount`,

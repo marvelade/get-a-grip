@@ -248,7 +248,7 @@
 				{
 					case self::WRITE_MODE_INSERT:
 					
-						$sql = "INSERT INTO `" . TBL_PREFIX . "tbl_payments`  SET	
+						$sql = "INSERT INTO `" . Settings::get('TBL_PREFIX') . "tbl_payments`  SET	
 							`payment_amount`=:amt,
 							`payment_description`=:descr,							
 							`payment_invoice_date`=:inv_d,
@@ -263,7 +263,7 @@
 					
 					case self::WRITE_MODE_UPDATE:
 					
-					$sql = "UPDATE " . TBL_PREFIX . "tbl_payments
+					$sql = "UPDATE " . Settings::get('TBL_PREFIX') . "tbl_payments
 							SET
 							`payment_amount`=:amt,
 							`payment_description`=:descr,
@@ -316,7 +316,7 @@
 			
 			
 			$sql = "SELECT * 
-					FROM " . TBL_PREFIX . "tbl_payments
+					FROM " . Settings::get('TBL_PREFIX') . "tbl_payments
 					WHERE payment_id=:pid LIMIT 1";
 					
 			$dbh = Settings :: get('dbh');
@@ -357,7 +357,7 @@
 		{
 			
 			
-			$sql = "DELETE FROM " . TBL_PREFIX . "tbl_payments WHERE payment_id=:pid LIMIT 1";
+			$sql = "DELETE FROM " . Settings::get('TBL_PREFIX') . "tbl_payments WHERE payment_id=:pid LIMIT 1";
 			
 			$dbh = Settings :: get('dbh');
 			$stmt = $dbh -> prepare($sql);
@@ -371,7 +371,7 @@
 
 			
 			$sql = "UPDATE 
-						" . TBL_PREFIX . "tbl_payments
+						" . Settings::get('TBL_PREFIX') . "tbl_payments
 					SET
 						 payment_visible ='0'
 					WHERE

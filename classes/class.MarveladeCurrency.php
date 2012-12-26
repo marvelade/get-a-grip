@@ -8,7 +8,7 @@ class MarveladeCurrency
 		
 		require("inc.dbconnect.php");
 		$sql = "SELECT currency_id, currency_iso_code 
-					FROM " . TBL_PREFIX . "tbl_currencies 
+					FROM " . Settings::get('TBL_PREFIX') . "tbl_currencies 
 					WHERE 1
 					ORDER BY currency_iso_code ASC";
 		

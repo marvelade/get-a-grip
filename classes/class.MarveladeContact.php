@@ -14,7 +14,7 @@ class MarveladeContact
 		{
 			$this -> id = intval($candidate_id);
 			
-			$sql = "SELECT * FROM " . TBL_PREFIX . "tbl_contacts
+			$sql = "SELECT * FROM " . Settings::get('TBL_PREFIX') . "tbl_contacts
 					WHERE contact_id=:cid
 					LIMIT 1";
 			
@@ -160,7 +160,7 @@ class MarveladeContact
 		else
 		{
 			require("inc.dbconnect.php");
-			$sql = "UPDATE " . TBL_PREFIX . "tbl_contacts
+			$sql = "UPDATE " . Settings::get('TBL_PREFIX') . "tbl_contacts
 					SET contact_active = ABS(contact_active - 1)
 					WHERE contact_id=:cid";
 					
@@ -227,7 +227,7 @@ EOF;
 			
 
 					require("inc.dbconnect.php");
-					$sql = "SELECT * FROM " . TBL_PREFIX . "tbl_contacts WHERE contact_id = :cid";
+					$sql = "SELECT * FROM " . Settings::get('TBL_PREFIX') . "tbl_contacts WHERE contact_id = :cid";
 					$stmt = $dbh -> prepare($sql);
 					$stmt -> bindValue(':cid', $this -> id, PDO::PARAM_INT);
 					$stmt -> execute();
@@ -266,7 +266,7 @@ EOF;
 	public function update_properties($data_array)
 	{
 		require("inc.dbconnect.php");
-		$sql = "UPDATE " . TBL_PREFIX . "tbl_contacts SET 
+		$sql = "UPDATE " . Settings::get('TBL_PREFIX') . "tbl_contacts SET 
 					contact_name=:c_name,
 					contact_is_supplier=:c_is_suppl,
 					contact_is_customer=:c_is_cust,
@@ -293,7 +293,7 @@ EOF;
 	public function set_properties($data_array)
 	{
 		require("inc.dbconnect.php");
-		$sql = "INSERT INTO " . TBL_PREFIX . "tbl_contacts SET 
+		$sql = "INSERT INTO " . Settings::get('TBL_PREFIX') . "tbl_contacts SET 
 					contact_name=:c_name,
 					contact_is_supplier=:c_is_suppl,
 					contact_is_customer=:c_is_cust,
@@ -322,7 +322,7 @@ EOF;
 		
 		require("inc.dbconnect.php");
 		$sql = "SELECT contact_id, contact_name, contact_color 
-					FROM " . TBL_PREFIX . "tbl_contacts 
+					FROM " . Settings::get('TBL_PREFIX') . "tbl_contacts 
 					WHERE 1
 					ORDER BY contact_name ASC";
 		
@@ -351,7 +351,7 @@ EOF;
 	{
 		require("inc.dbconnect.php");
 		
-		$sql = "SELECT * FROM " . TBL_PREFIX . "tbl_contacts WHERE 1";
+		$sql = "SELECT * FROM " . Settings::get('TBL_PREFIX') . "tbl_contacts WHERE 1";
 		
 		if($mode == self::GET_SUPPLIERS)
 		{
