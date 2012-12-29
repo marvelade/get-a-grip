@@ -28,6 +28,7 @@ class MarveladeContact
 			
 			if(is_array($row))
 			{
+				$this -> set_contact_id($row['contact_id']);
 				$this -> set_contact_name($row['contact_name']);
 				$this -> set_contact_color($row['contact_color']);
 				$this -> set_contact_is_customer($row['contact_is_customer'] == 1);
@@ -36,19 +37,18 @@ class MarveladeContact
 			}
 			else
 			{
-				throw new Exception(__CLASS__ . ' constructor died : contact ID "' . $candidate_id . '" is not present in the database.');
+				throw new ContactException(__CLASS__ . ' constructor died : contact ID "' . $candidate_id . '" is not present in the database.');
 			}
 			
 		}
 		elseif($candidate_id == -1)
 		{
-			echo __LINE__ . "<br />";
 			//let it slide, this is for a new customer
 			// so we don't assign an ID
 		}
 		else
 		{
-			throw new Exception(__CLASS__ . ' constructor died (candidate_id = ' . $candidate_id . ')');
+			throw new ContactException(__CLASS__ . ' constructor died (candidate_id = ' . $candidate_id . ')');
 		}
 		
 
@@ -66,6 +66,24 @@ class MarveladeContact
 		if(isset($this -> contact_name))
 		{
 			return $this -> contact_name;
+		}
+		else
+		{
+			return(false);
+		}
+	}
+	
+	
+	public function set_contact_id($contact_id)
+	{
+		$this -> contact_id = $contact_id;
+	}
+	
+	public function get_contact_id()
+	{
+		if(isset($this -> contact_id))
+		{
+			return $this -> contact_id;
 		}
 		else
 		{
@@ -154,7 +172,7 @@ class MarveladeContact
 		$pi = (pathinfo($referer));
 		if($pi['basename'] != 'contacts-manage.php')
 		{
-			throw new Exception(__METHOD__ . ': Wrong caller');
+			throw new ContactException(__METHOD__ . ': Wrong caller');
 			return false;
 		}
 		else
@@ -251,7 +269,7 @@ EOF;
 			break;
 			
 			default:
-				throw new Exception(__METHOD__ . ': false mode argument supplied:"' . $mode . '"');
+				throw new ContactException(__METHOD__ . ': false mode argument supplied:"' . $mode . '"');
 			break;
 		
 		
@@ -282,7 +300,7 @@ EOF;
 		$stmt -> bindParam(':c_is_suppl', intval(isset($data_array['c_is_supp'])), PDO::PARAM_INT);
 		$stmt -> bindParam(':c_is_cust', intval(isset($data_array['c_is_cst'])), PDO::PARAM_INT);
 		$stmt -> bindParam(':c_is_active', intval(isset($data_array['c_is_active'])), PDO::PARAM_INT);
-		$stmt -> bindParam(':c_color', htmlspecialchars_decode($data_array['c_color']), PDO::PARAM_STR);
+		$stmt -> bindParam(':c_color',  strtoupper(strval($data_array['c_color'])), PDO::PARAM_STR);
 
 		
 		return($stmt -> execute());
@@ -308,9 +326,9 @@ EOF;
 		$stmt -> bindParam(':c_is_suppl', intval(isset($data_array['c_is_supp'])), PDO::PARAM_INT);
 		$stmt -> bindParam(':c_is_cust', intval(isset($data_array['c_is_cst'])), PDO::PARAM_INT);
 		$stmt -> bindParam(':c_is_active', intval(isset($data_array['c_is_active'])), PDO::PARAM_INT);
-		$stmt -> bindParam(':c_color', intval(isset($data_array['c_color'])), PDO::PARAM_STR);
+		$stmt -> bindParam(':c_color', strtoupper(strval($data_array['c_color'])), PDO::PARAM_STR);
 
-		
+
 		return($stmt -> execute());
 	}
 
@@ -351,26 +369,26 @@ EOF;
 	{
 		require("inc.dbconnect.php");
 		
-		$sql = "SELECT * FROM " . Settings::get('TBL_PREFIX') . "tbl_contacts WHERE 1";
+		$sql = "SELECT * FROM " . Settings::get('TBL_PREFIX') . "tbl_contacts WHERE 1 ";
 		
 		if($mode == self::GET_SUPPLIERS)
 		{
-			$sql.= " AND contact_is_supplier = 1 ";
+			$sql.= "AND contact_is_supplier = 1 ";
 		}
 		
 		if($mode == self::GET_CUSTOMERS)
 		{
-			$sql.= " AND contact_is_customer = 1 ";
+			$sql.= "AND contact_is_customer = 1 ";
 		}
 		
-		$sql .= " ORDER BY contact_name ASC";
+		$sql .= " AND contact_visible = 1 ORDER BY contact_name ASC ";
 		
 		$stmt = $dbh -> prepare($sql);
 		$stmt -> execute();
 		
 		$retval = null;
 		$retval.= '<center><table border="1">';
-		$retval.= '<tr><th>ID<th>Contact name<th>EDIT<th>DEACTIVATE';
+		$retval.= '<tr><th>ID<th>Contact name<th colspan="2">EDIT<th>DEACTIVATE';
 		$tally = 0;
 		while($row = $stmt -> fetch(PDO::FETCH_ASSOC))
 		{
@@ -379,6 +397,7 @@ EOF;
 			$retval.= '<td width="40" align="center">' . $row['contact_id'] . '</a></td>';
 			$retval.= '<td width="' . COLUMN_WIDTH_CONTACT_NAME . '"><span style="color:#' . $row['contact_color'] . '">' . $row['contact_name'] . '</span></td>';
 			$retval.= '<td width="' . COLUMN_WIDTH_EDIT_BUTTON . '" align="center"><a href="contact-edit.php?c_id=' . $row['contact_id'] . '"><img src="img/icon_edit_item.gif" style="border:none"></a></td>';
+			$retval.= '<td width="' . COLUMN_WIDTH_DELETE_BUTTON . '" align="center"><a href="contact-delete.php?c_id=' . $row['contact_id'] . '"><img src="img/icon_delete_item.gif" style="border:none"></a></td>';
 			$retval.= '<td width="' . COLUMN_WIDTH_DEACTIVATE_BUTTON . '" align="center"><a href="contact-toggle-activity.php?c_id=' . $row['contact_id'] . '">';
 			
 			if($row['contact_active'] == '1')
@@ -399,5 +418,47 @@ EOF;
 		return $retval;
 		
 	}
+	
+	public function display_are_u_sure_dialog()
+	{
+		$retval = '
+			<table border="1">
+				<form action="' . $_SERVER['PHP_SELF'] . '" method="post">
+					<input type="hidden" name="c_id" value="' . $this -> get_contact_id()  .'">
+					<tr>
+						<td>Contact:</td>
+						<td>' . $this -> get_contact_name() . '</td>
+					</tr>
+				
+					<td></td>
+						<td><input type="submit" name="go" value="Delete">
+						<input type="button" onClick="javascript:history.go(-1);" value="Cancel"></td>
+					</tr>
+				</form>
+			</table>';
+	
+		return $retval;
+	
+	}
+	
+	public function make_invisible()
+	{
+
+		
+		$sql = "UPDATE 
+					" . Settings::get('TBL_PREFIX') . "tbl_contacts
+				SET
+					 contact_visible ='0'
+				WHERE
+					contact_id=:cid
+				LIMIT 1";
+				
+		$dbh = Settings :: get('dbh');
+		$stmt = $dbh -> prepare($sql);
+		$stmt -> bindValue(":cid", $this -> contact_id, PDO::PARAM_INT);
+		
+		return($stmt -> execute());
+	}
+		
 }
 ?>

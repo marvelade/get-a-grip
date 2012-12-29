@@ -2,6 +2,9 @@
 ob_start();
 header('Content-Type: text/html; charset=utf-8');
 require("config.php");
+
+if(!isset($_POST['go']))
+{
 ?>
 <html>
 <!-- This message MUST remain (cannot be seen on website). Web template thanks to OZGRESSION Web Design (www.ozgression.vze.com) -->
@@ -10,31 +13,15 @@ require("config.php");
 		<?php echo insert_title_tag(__FILE__); ?>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" href="css/basic.css">
+		
+		
+		
+		
 	</head>
 	
 	<body>
 	
-	<?php
-		
-		
-		
-		try
-		{
-			$p = new MarveladePayment(MarveladePayment::TYPE_INCOMING);
-			$p -> set_invoice_date("2009-10-24");
-			$p -> set_due_date("2009-11-13");
-			$p -> set_contact_id(1);
-			$p -> set_amount(150.00);
-			$p -> set_currency(MarveladePayment::CURRENCY_EUR);
-			
-			
-			
-		}
-		catch(Exception $e)
-		{
-			echo "Caught Exception ('{$e->getMessage()}')\n{$e}\n";
-		}
-		
+	<?php		
 		echo insert_top_table()
 	?>
 	
@@ -42,18 +29,22 @@ require("config.php");
 		<table <?= Settings::get('MAIN_TABLE_ATTRIBUTES'); ?>>
 			<tr>
 				<td>
-					<table <?php echo Settings::get('SUB_TABLE_ATTRIBUTES'); ?>>
+					<table <?= Settings::get('SUB_TABLE_ATTRIBUTES'); ?>>
 						<tr>
 							
 							<?php			
 								echo insert_left_menu();
 							?>
-							<td bgcolor="white" valign="top">
+							<td bgcolor="white" valign="top" align="center">
 								<!-- CONTENT STARTS HERE -->
+								<h2>Are you sure you want to delete this contact?</h2>
+								<?php
 								
-								
-								
-								
+									$ct = new MarveladeContact($_GET['c_id']);
+									echo $ct -> display_are_u_sure_dialog();
+									$ct = null;
+
+								?>
 				
 								<!-- CONTENT ENDS HERE -->
 							</td>
@@ -71,3 +62,17 @@ require("config.php");
 	
 	</body>
 </html>
+<?php
+
+}
+else
+{
+	print_r($_POST);
+
+	$ct = new MarveladeContact($_POST['c_id']);
+	$ct -> make_invisible();
+	
+	header("Location:contacts-manage.php");
+	
+
+}
